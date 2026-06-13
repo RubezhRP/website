@@ -1,0 +1,4 @@
+echo node_modules/ > .gitignore
+echo dist/ >> .gitignore
+echo release/ >> .gitignore
+echo *.exe >> .gitignore
