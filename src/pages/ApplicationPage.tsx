@@ -1,45 +1,5 @@
 import { useState } from "react";
 
-// Шифрование (простой XOR, чтобы скрыть от прямого просмотра)
-const xor = (str: string, key: string) => {
-  let result = "";
-  for (let i = 0; i < str.length; i++) {
-    result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-  }
-  return result;
-};
-
-// Зашифрованные данные (токен и ID)
-const encryptedToken = "~&>?@!$%^*()_+{}:";
-const encryptedChats = ["#%^&*()_+{}:|", "@#$%^&*()_+{}:"];
-
-// Расшифровка
-const BOT_TOKEN = xor(encryptedToken, "SECRET_KEY_2024");
-const CHAT_IDS = encryptedChats.map(c => xor(c, "SECRET_KEY_2024"));
-
-type Role = "Стажер" | "Хелпер" | "Модератор" | "Администратор" | "Старший администратор" | "ЗГС" | "ГС" | "Куратор";
-type LeaderRole = "Правительство" | "Армия" | "Министерство внутренних дел" | "Тюрьма строгого режима" | "Новостное агенство Арзамас";
-
-// Включение/выключение ролей (1 = показывать, 0 = скрыть)
-const ADMIN_ROLES: { role: Role; enabled: 1 | 0 }[] = [
-  { role: "Стажер", enabled: 1 },
-  { role: "Хелпер", enabled: 1 },
-  { role: "Модератор", enabled: 1 },
-  { role: "Администратор", enabled: 1 },
-  { role: "Старший администратор", enabled: 0 },
-  { role: "ЗГС", enabled: 0 },
-  { role: "ГС", enabled: 0 },
-  { role: "Куратор", enabled: 1 },
-];
-
-const LEADER_ROLES: { role: LeaderRole; enabled: 1 | 0 }[] = [
-  { role: "Правительство", enabled: 1 },
-  { role: "Армия", enabled: 1 },
-  { role: "Министерство внутренних дел", enabled: 1 },
-  { role: "Тюрьма строгого режима", enabled: 1 },
-  { role: "Новостное агенство Арзамас", enabled: 0 },
-];
-
 export function ApplicationPage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -75,38 +35,11 @@ export function ApplicationPage() {
     }
 
     setSending(true);
-    const text = `
-📋 **НОВАЯ ЗАЯВКА** 📋
-
-👤 **Никнейм:** ${formData.nickname}
-👶 **Имя:** ${formData.realName}
-📅 **Возраст:** ${formData.age}
-
-🎯 **Тип:** ${formData.type === "admin" ? "Администратор" : "Лидер"}
-
-${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛️ **Роль:** ${formData.leaderRole}`}
-
-💼 **Опыт на должности:** ${formData.hasExperience === "yes" ? "Да" : "Нет"}
-
-📱 **Контакты (ТГ/ДС/ВК):** ${formData.contacts}
-
-⚠️ **Подтверждение риска:** ${formData.confirmRisk === "yes" ? "Да" : "Нет"}
-    `;
-
-    for (const chatId of CHAT_IDS) {
-      try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
-        });
-      } catch (e) {
-        console.error("Ошибка отправки в", chatId, e);
-      }
-    }
-
-    setSending(false);
-    setStep(5); // переход на финальный шаг
+    // Временно просто показываем сообщение
+    setTimeout(() => {
+      setSending(false);
+      setStep(5);
+    }, 1000);
   };
 
   const renderStep = () => {
@@ -179,25 +112,22 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
               {formData.type === "admin" ? "Выбери роль в администрации" : "Выбери лидерскую позицию"}
             </h3>
             <div className="grid grid-cols-2 gap-3">
-              {formData.type === "admin"
-                ? ADMIN_ROLES.filter(r => r.enabled === 1).map(r => (
-                    <button
-                      key={r.role}
-                      onClick={() => { updateField("adminRole", r.role); setStep(4); }}
-                      className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50"
-                    >
-                      {r.role}
-                    </button>
-                  ))
-                : LEADER_ROLES.filter(r => r.enabled === 1).map(r => (
-                    <button
-                      key={r.role}
-                      onClick={() => { updateField("leaderRole", r.role); setStep(4); }}
-                      className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50"
-                    >
-                      {r.role}
-                    </button>
-                  ))}
+              {formData.type === "admin" ? (
+                <>
+                  <button onClick={() => { updateField("adminRole", "Стажер"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Стажер</button>
+                  <button onClick={() => { updateField("adminRole", "Хелпер"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Хелпер</button>
+                  <button onClick={() => { updateField("adminRole", "Модератор"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Модератор</button>
+                  <button onClick={() => { updateField("adminRole", "Администратор"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Администратор</button>
+                  <button onClick={() => { updateField("adminRole", "Куратор"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Куратор</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => { updateField("leaderRole", "Правительство"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Правительство</button>
+                  <button onClick={() => { updateField("leaderRole", "Армия"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Армия</button>
+                  <button onClick={() => { updateField("leaderRole", "Министерство внутренних дел"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">МВД</button>
+                  <button onClick={() => { updateField("leaderRole", "Тюрьма строгого режима"); setStep(4); }} className="rounded-xl border border-white/10 bg-white/5 p-3 text-white hover:border-red-500/50">Тюрьма</button>
+                </>
+              )}
             </div>
           </div>
         );
@@ -208,51 +138,23 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
             <div>
               <label className="block text-sm text-white/60 mb-1">Есть ли опыт на данной должности?</label>
               <div className="flex gap-3 mt-2">
-                <button
-                  onClick={() => updateField("hasExperience", "yes")}
-                  className={`flex-1 rounded-xl border py-3 ${formData.hasExperience === "yes" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}
-                >
-                  Да
-                </button>
-                <button
-                  onClick={() => updateField("hasExperience", "no")}
-                  className={`flex-1 rounded-xl border py-3 ${formData.hasExperience === "no" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}
-                >
-                  Нет
-                </button>
+                <button onClick={() => updateField("hasExperience", "yes")} className={`flex-1 rounded-xl border py-3 ${formData.hasExperience === "yes" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}>Да</button>
+                <button onClick={() => updateField("hasExperience", "no")} className={`flex-1 rounded-xl border py-3 ${formData.hasExperience === "no" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}>Нет</button>
               </div>
             </div>
             <div>
               <label className="block text-sm text-white/60 mb-1">Твой Telegram / Discord / VK для связи</label>
-              <input
-                type="text"
-                value={formData.contacts}
-                onChange={e => updateField("contacts", e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/40 p-3 text-white"
-                placeholder="@username"
-              />
+              <input type="text" value={formData.contacts} onChange={e => updateField("contacts", e.target.value)} className="w-full rounded-xl border border-white/10 bg-black/40 p-3 text-white" placeholder="@username" />
             </div>
             <div>
-              <label className="block text-sm text-white/60 mb-1">Подтверждаешь риск мошенничества и обязанность не передавать данные аккаунта третьим лицам?</label>
+              <label className="block text-sm text-white/60 mb-1">Подтверждаешь риск мошенничества?</label>
               <div className="flex gap-3 mt-2">
-                <button
-                  onClick={() => updateField("confirmRisk", "yes")}
-                  className={`flex-1 rounded-xl border py-3 ${formData.confirmRisk === "yes" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}
-                >
-                  Да
-                </button>
-                <button
-                  onClick={() => updateField("confirmRisk", "no")}
-                  className={`flex-1 rounded-xl border py-3 ${formData.confirmRisk === "no" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}
-                >
-                  Нет
-                </button>
+                <button onClick={() => updateField("confirmRisk", "yes")} className={`flex-1 rounded-xl border py-3 ${formData.confirmRisk === "yes" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}>Да</button>
+                <button onClick={() => updateField("confirmRisk", "no")} className={`flex-1 rounded-xl border py-3 ${formData.confirmRisk === "no" ? "border-red-500 bg-red-500/20" : "border-white/10 bg-white/5"}`}>Нет</button>
               </div>
             </div>
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setStep(3)} className="flex-1 rounded-xl bg-white/10 py-3 text-white">
-                Назад
-              </button>
+              <button onClick={() => setStep(3)} className="flex-1 rounded-xl bg-white/10 py-3 text-white">Назад</button>
               <button onClick={sendToTelegram} disabled={sending} className="flex-1 rounded-xl bg-gradient-to-r from-red-600 to-red-800 py-3 text-white font-semibold">
                 {sending ? "Отправка..." : "Отправить заявку"}
               </button>
@@ -263,12 +165,8 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
         return (
           <div className="py-10 text-center">
             <div className="mb-4 text-5xl">✅</div>
-            <h3 className="text-2xl font-bold text-white">
-              Заявка отправлена
-            </h3>
-            <p className="mt-3 text-white/60">
-              Мы свяжемся с вами в ближайшее время.
-            </p>
+            <h3 className="text-2xl font-bold text-white">Заявка отправлена</h3>
+            <p className="mt-3 text-white/60">Мы свяжемся с вами в ближайшее время.</p>
           </div>
         );
       default:
