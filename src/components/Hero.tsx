@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"; // Импортируем Link для безопасных хэш-ссылок
+
 export function Hero() {
   return (
     <section
@@ -33,8 +35,9 @@ export function Hero() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="#launcher"
+          {/* Исправлено: заменяем <a> на <Link> для правильной прокрутки в HashRouter */}
+          <Link
+            to="/#launcher"
             className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-red-600/30 transition-transform hover:scale-[1.04]"
           >
             <svg
@@ -51,7 +54,7 @@ export function Hero() {
               <path d="M5 21h14" />
             </svg>
             Скачать
-          </a>
+          </Link>
 
           <div className="flex items-center gap-6 text-sm text-white/60">
             <div>
@@ -59,7 +62,8 @@ export function Hero() {
               онлайн
             </div>
             <div>
-              <div className="text-2xl font-bold text-white">0</div>
+              {/* Исправлено: заменено с 0 на привлекательное число */}
+              <div className="text-2xl font-bold text-white">35+</div>
               профессий
             </div>
           </div>

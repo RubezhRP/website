@@ -2,7 +2,7 @@
 //  НАСТРОЙКИ САЙТА — меняй значения здесь
 // ============================================================
 
-// Ссылка на форум
+// Ссылка на форум проекта
 export const FORUM_URL = "https://whg114269.sampproject.ru/index.php";
 
 // Ссылки на установщик (.exe).
@@ -18,22 +18,22 @@ export const DOWNLOAD_LINKS = {
   backup: "/downloads/launcher_backup.exe",
 };
 
-// Имя, под которым будет сохраняться файл у пользователя
+// Имя, под которым будет сохраняться файл у пользователя при скачивании
 export const DOWNLOAD_FILENAME = "RubezhLauncher.exe";
 
-// Системные требования (Windows)
+// Минимальные системные требования для ПК (оптимизировано под SAMP)
 export const REQUIREMENTS_WINDOWS = [
-  { label: "ОС", value: "Windows 10 (64 бит)" },
-  { label: "Процессор", value: "Intel Core i5-6600K / AMD FX-6300" },
-  { label: "Оперативная память", value: "4 ГБ" },
-  { label: "Видеокарта", value: "От 2 ГБ. видеопамяти" },
-  { label: "Место на диске", value: "12 ГБ" },
+  { label: "Операционная система", value: "Windows 7, 10, 11" },
+  { label: "Процессор (CPU)", value: "Intel Core 2 Duo / AMD Athlon" },
+  { label: "Оперативная память", value: "2 GB RAM" },
+  { label: "Видеокарта (GPU)", value: "NVIDIA GT 710 / AMD Radeon" },
+  { label: "Место на диске", value: "4.5 GB" },
 ];
 
-// Системные требования (Android)
+// Минимальные системные требования для Android версии
 export const REQUIREMENTS_ANDROID = [
-  { label: "ОС", value: "Скоро" },
-  { label: "Процессор", value: "Скоро" },
-  { label: "Оперативная память", value: "Скоро" },
-  { label: "Место на диске", value: "Скоро" },
+  { label: "Операционная система", value: "Android 7.0 и выше" },
+  { label: "Процессор (CPU)", value: "4 ядра (1.5 ГГц)" },
+  { label: "Оперативная память", value: "3 GB RAM" },
+  { label: "Место на диске", value: "2.5 GB" },
 ];

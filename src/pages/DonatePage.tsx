@@ -6,9 +6,11 @@ export function DonatePage() {
   const [amount, setAmount] = useState("");
   const [selectedServer, setSelectedServer] = useState("DRAGON");
   const [selectedPayment, setSelectedPayment] = useState("card");
+  
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [notificationType, setNotificationType] = useState<"info" | "error" | "success">("info");
+  const [activeTimeout, setActiveTimeout] = useState<NodeJS.Timeout | null>(null); // Для фикса бага с таймерами
 
   // Проверка ника (только латиница, цифры, нижнее подчёркивание, от 3 до 20 символов)
   const validateNickname = (nick: string) => {
@@ -31,13 +33,22 @@ export function DonatePage() {
     validateNickname(value);
   };
 
+  // Исправленная функция вывода уведомлений
   const showMessage = (message: string, type: "info" | "error" | "success") => {
+    // Если уже запущен таймер — сбрасываем его, чтобы уведомления не моргали
+    if (activeTimeout) {
+      clearTimeout(activeTimeout);
+    }
+
     setNotificationMessage(message);
     setNotificationType(type);
     setShowNotification(true);
-    setTimeout(() => {
+
+    const timeoutId = setTimeout(() => {
       setShowNotification(false);
-    }, 3000);
+    }, 4000); // 4 секунды, чтобы успели прочитать длинный текст про тех. работы
+
+    setActiveTimeout(timeoutId);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,7 +86,7 @@ export function DonatePage() {
 
       {/* Уведомление */}
       {showNotification && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-5 duration-300">
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-5 duration-300 max-w-md w-full px-4">
           <div className={`rounded-2xl px-6 py-4 shadow-2xl backdrop-blur-xl border ${
             notificationType === "error" 
               ? "bg-red-500/20 border-red-500/50 text-red-200" 
@@ -87,7 +98,7 @@ export function DonatePage() {
               {notificationType === "error" && <span>❌</span>}
               {notificationType === "success" && <span>✅</span>}
               {notificationType === "info" && <span>ℹ️</span>}
-              <p className="text-sm font-medium">{notificationMessage}</p>
+              <p className="text-sm font-medium leading-relaxed">{notificationMessage}</p>
             </div>
           </div>
         </div>
@@ -130,7 +141,7 @@ export function DonatePage() {
               )}
             </div>
 
-            {/* Сервер - красивые карточки */}
+            {/* Сервер */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-white/60 mb-3">
                 Сервер
@@ -161,9 +172,9 @@ export function DonatePage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                        <span className="text-xs text-orange-400">Тех.Работы</span>
+                        <span className="text-xs text-orange-400 font-medium">Тех.Работы</span>
                         {selectedServer === server.id && (
-                          <span className="ml-2 text-red-400">✓</span>
+                          <span className="ml-2 text-red-400 font-bold">✓</span>
                         )}
                       </div>
                     </div>
@@ -209,7 +220,7 @@ export function DonatePage() {
                 min="10"
                 max="500000"
                 step="1"
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white placeholder:text-white/30 focus:border-red-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white placeholder:text-white/30 focus:border-red-500 focus:outline-none transition-all"
                 required
               />
               <p className="mt-2 text-xs text-white/40">Минимальная сумма: 10 ₽ • Максимальная: 500 000 ₽</p>
@@ -218,25 +229,27 @@ export function DonatePage() {
             {/* Кнопка отправки */}
             <button
               type="submit"
-              className="mt-4 w-full rounded-2xl bg-gradient-to-r from-red-600 to-red-800 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-red-600/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-red-600/50"
+              className="mt-4 w-full rounded-2xl bg-gradient-to-r from-red-600 to-red-800 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-red-600/30 transition-all duration-300 hover:scale-[1.01] hover:shadow-red-600/50 active:scale-[0.99]"
             >
               Перейти к оплате
             </button>
           </div>
         </form>
 
-        {/* Юридические ссылки - РАБОТАЮТ через модальное окно */}
+        {/* Юридические ссылки */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs text-white/40">
           <button
-            onClick={() => showMessage("📜 Политика конфиденциальности: Мы не передаём ваши данные третьим лицам. Все платежи защищены.", "info")}
-            className="hover:text-white/60 transition-colors"
+            type="button"
+            onClick={() => showMessage("📜 Политика конфиденциальности: Мы не передаём ваши данные третьим лицам. Все платежи полностью защищены.", "info")}
+            className="hover:text-white/60 transition-colors outline-none"
           >
             Политика конфиденциальности
           </button>
           <span>•</span>
           <button
-            onClick={() => showMessage("⚖️ Условия пользования: Пополняя счёт, вы соглашаетесь с правилами проекта. Возврат средств осуществляется согласно внутренней политике.", "info")}
-            className="hover:text-white/60 transition-colors"
+            type="button"
+            onClick={() => showMessage("⚖️ Условия пользования: Пополняя счёт, вы соглашаетесь с правилами игрового проекта. Возврат средств регламентируется внутренней политикой.", "info")}
+            className="hover:text-white/60 transition-colors outline-none"
           >
             Условия пользования
           </button>

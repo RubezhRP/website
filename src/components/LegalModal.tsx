@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export type LegalType = "agreement" | "privacy" | null;
 
 const CONTENT = {
@@ -14,7 +16,7 @@ const CONTENT = {
       },
       {
         heading: "3. Ответственность Администрации",
-        text: "Администрация оставляет за собой право изменять правила сервера, временно приостанавливать его работу для проведения технических работ, а также блокировать аккаунты Пользователей в случае нарушения Соглашения. Администрация не несёт ответственности за перебои в работе сервиса, связанные с действиями третьих лиц.",
+        text: "Администрация оставляет за собой право изменять правила сервера, временно приостанавливать его работу для проведения технических работ, а также блокировать аккаунты Пользователей в случае нарушения Соглашения. Администрация не несет ответственности за перебои в работе сервиса, связанные с действиями третьих лиц.",
       },
       {
         heading: "4. Игровая валюта и донат",
@@ -60,6 +62,30 @@ export function LegalModal({
   type: LegalType;
   onClose: () => void;
 }) {
+  
+  // Управление блокировкой скролла страницы и закрытием по ESC
+  useEffect(() => {
+    if (!type) return;
+
+    // Блокируем скролл основного сайта при открытии модалки
+    document.body.style.overflow = "hidden";
+
+    // Закрытие по нажатию на клавишу Escape
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Чистим за собой эффекты, когда модалка закрывается (предотвращаем утечку памяти)
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [type, onClose]);
+
   if (!type) return null;
   const data = CONTENT[type];
 
@@ -68,15 +94,18 @@ export function LegalModal({
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-10"
       onClick={onClose}
     >
+      {/* Задний размытый фон (Overlay) */}
       <div className="fixed inset-0 bg-black/75 backdrop-blur-sm animate-[fadeIn_0.2s_ease]" />
 
+      {/* Само модальное окно */}
       <div
-        className="relative w-full max-w-3xl rounded-3xl border border-white/10 bg-[#15101d] p-8 shadow-2xl animate-[popIn_0.25s_ease]"
+        className="relative w-full max-w-3xl rounded-3xl border border-white/10 bg-[#15101d] p-6 sm:p-8 shadow-2xl animate-[popIn_0.25s_ease]"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Кнопка закрытия (крестик) */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 text-white/40 transition-colors hover:text-white"
+          className="absolute right-5 top-5 text-white/40 transition-colors hover:text-white outline-none"
           aria-label="Закрыть"
         >
           <svg
@@ -92,22 +121,27 @@ export function LegalModal({
           </svg>
         </button>
 
-        <h3 className="text-3xl font-black text-white">{data.title}</h3>
+        {/* Заголовок документа */}
+        <h3 className="pr-8 text-2xl font-black text-white sm:text-3xl">
+          {data.title}
+        </h3>
 
-        <div className="mt-6 space-y-6">
+        {/* Скроллируемый текст */}
+        <div className="mt-6 space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
           {data.blocks.map((block) => (
             <div key={block.heading}>
-              <h4 className="text-lg font-bold text-rose-400">
+              <h4 className="text-base font-bold text-red-400 sm:text-lg">
                 {block.heading}
               </h4>
-              <p className="mt-2 leading-relaxed text-white/70">
+              <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-base">
                 {block.text}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-8 border-t border-white/10 pt-5 text-sm text-white/40">
+        {/* Подвал модалки */}
+        <div className="mt-8 border-t border-white/10 pt-5 text-xs text-white/40">
           Дата последнего обновления: 1 января 2026 г.
         </div>
       </div>
