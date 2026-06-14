@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import { Logo } from "./Logo";
 import { FORUM_URL } from "../config";
 import { useLocation } from "react-router-dom";
@@ -6,7 +7,8 @@ export function Navbar() {
   const location = useLocation();
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    // Для HashRouter пути начинаются с /#/
+    return location.pathname === path || location.hash === `#${path}`;
   };
 
   return (
@@ -18,7 +20,7 @@ export function Navbar() {
           </a>
           <div className="hidden items-center gap-6 text-sm font-medium sm:flex">
             <a
-              href="/"
+              href="/#/"
               className={`transition-colors ${
                 isActive("/")
                   ? "text-white font-semibold"
@@ -28,7 +30,7 @@ export function Navbar() {
               Главная
             </a>
             <a
-              href="/donate"
+              href="/#/donate"
               className={`transition-colors ${
                 isActive("/donate")
                   ? "text-white font-semibold"
@@ -37,8 +39,9 @@ export function Navbar() {
             >
               Донат
             </a>
+            {/* Вот здесь была ошибка — добавлена правильная ссылка для Заявки */}
             <a
-              href="/application"
+              href="/#/application"
               className={`transition-colors ${
                 isActive("/application")
                   ? "text-white font-semibold"

@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Перенаправление...</title>
-    <script>
-      // Запоминаем путь, который запрашивал пользователь
-      var path = window.location.pathname;
-      var base = '/website'; // <-- ВАЖНО: замени 'website' на название ТВОЕГО репозитория (только латиница!)
-      
-      // Сохраняем путь и перенаправляем на главную
-      sessionStorage.setItem('redirect', path.replace(base, ''));
-      window.location.replace(base + '/');
-    </script>
-  </head>
-  <body>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=/website/#/application">
+  <script>
+    window.location.href = '/website/#/application';
+  </script>
+  <title>Редирект...</title>
+</head>
+<body>
+  <p>Перенаправление...</p>
+</body>
 </html>
