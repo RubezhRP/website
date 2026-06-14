@@ -46,7 +46,7 @@ export function ApplicationPage() {
     nickname: "",
     realName: "",
     age: "",
-    type: "admin", // admin или leader
+    type: "admin",
     adminRole: "Стажер",
     leaderRole: "Правительство",
     hasExperience: "",
@@ -61,6 +61,19 @@ export function ApplicationPage() {
   };
 
   const sendToTelegram = async () => {
+    // Проверка заполнения всех полей
+    if (
+      !formData.nickname ||
+      !formData.realName ||
+      !formData.age ||
+      !formData.contacts ||
+      formData.confirmRisk !== "yes"
+    ) {
+      setMessage("❌ Заполните все поля");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+
     setSending(true);
     const text = `
 📋 **НОВАЯ ЗАЯВКА** 📋
@@ -93,9 +106,7 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
     }
 
     setSending(false);
-    setMessage("✅ Заявка отправлена! Мы свяжемся с вами в ближайшее время.");
-    setTimeout(() => setMessage(""), 5000);
-    setStep(5);
+    setStep(5); // переход на финальный шаг
   };
 
   const renderStep = () => {
@@ -240,12 +251,24 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
             </div>
             <div className="flex gap-4 mt-6">
               <button onClick={() => setStep(3)} className="flex-1 rounded-xl bg-white/10 py-3 text-white">
-              Назад
+                Назад
               </button>
               <button onClick={sendToTelegram} disabled={sending} className="flex-1 rounded-xl bg-gradient-to-r from-red-600 to-red-800 py-3 text-white font-semibold">
-              {sending ? "Отправка..." : "Отправить заявку"}
+                {sending ? "Отправка..." : "Отправить заявку"}
               </button>
             </div>
+          </div>
+        );
+      case 5:
+        return (
+          <div className="py-10 text-center">
+            <div className="mb-4 text-5xl">✅</div>
+            <h3 className="text-2xl font-bold text-white">
+              Заявка отправлена
+            </h3>
+            <p className="mt-3 text-white/60">
+              Мы свяжемся с вами в ближайшее время.
+            </p>
           </div>
         );
       default:
@@ -269,7 +292,7 @@ ${formData.type === "admin" ? `🔧 **Роль:** ${formData.adminRole}` : `🏛
 
         <div className="rounded-2xl border border-white/10 bg-[#15101d]/80 p-6 backdrop-blur-xl">
           {message && (
-            <div className="mb-4 rounded-xl bg-green-500/20 border border-green-500/50 p-3 text-green-300 text-center">
+            <div className="mb-4 rounded-xl bg-red-500/20 border border-red-500/50 p-3 text-red-300 text-center">
               {message}
             </div>
           )}
